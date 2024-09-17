@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Video Q&A Chatbot",
+  "version": "1.0",
+  "description": "A chatbot that answers questions based on YouTube video content",
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://www.youtube.com/*", "http://localhost:8000/"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/watch*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["chatbot.html", "chatbot.css", "chatbot.js"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}
