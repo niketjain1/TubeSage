@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YouTube Q&A Chatbot</title>
+    <link rel="stylesheet" href="chatbot.css" />
+  </head>
+  <body>
+    <div id="chatbot-container">
+      <div id="chatbot-header">
+        <h1>Video Q&A</h1>
+        <button id="close-btn">✕</button>
+      </div>
+      <div id="chat-messages"></div>
+      <div id="chat-input">
+        <form id="chat-form">
+          <input
+            type="text"
+            id="user-input"
+            placeholder="Ask a question about the video..."
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+    <script src="chatbot.js"></script>
+  </body>
+</html>
