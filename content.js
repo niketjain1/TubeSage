@@ -1,3 +1,5 @@
+let chatHistory = [];
+
 // Function to inject the chatbot UI
 function injectChatbot() {
   const container = document.createElement("div");
@@ -27,8 +29,8 @@ function getVideoId(url) {
   return urlParams.get("v");
 }
 
-// Function to get video transcript
-async function getTranscript(videoId) {
+// Function to fetch transcript (only called once when video loads)
+async function fetchTranscript(videoId) {
   try {
     const response = await fetch(`http://localhost:8000/transcript`, {
       method: "POST",
@@ -50,26 +52,24 @@ async function getTranscript(videoId) {
   }
 }
 
-// Inject chatbot when the page loads
 injectChatbot();
 
-// Listen for messages from the iframe
+let currentVideoId = getVideoId(window.location.href);
+fetchTranscript(currentVideoId);
+
+let lastUrl = location.href;
+new MutationObserver(() => {
+  const url = location.href;
+  if (url !== lastUrl) {
+    lastUrl = url;
+    currentVideoId = getVideoId(url);
+    fetchTranscript(currentVideoId);
+    chatHistory = [];
+  }
+}).observe(document, { subtree: true, childList: true });
+
 window.addEventListener("message", async (event) => {
   if (event.data.type === "ASK_QUESTION") {
-    const videoId = getVideoId(window.location.href);
-    const transcript = await getTranscript(videoId);
-
-    if (!transcript) {
-      event.source.postMessage(
-        {
-          type: "CHATBOT_ERROR",
-          error: "Transcript not available for this video.",
-        },
-        "*"
-      );
-      return;
-    }
-
     try {
       const response = await fetch("http://localhost:8000/ask", {
         method: "POST",
@@ -77,16 +77,14 @@ window.addEventListener("message", async (event) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          url: `https://www.youtube.com/watch?v=${videoId}`,
+          url: `https://www.youtube.com/watch?v=${currentVideoId}`,
           question: event.data.question,
+          chat_history: chatHistory,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to get answer from server");
-      }
-
       const data = await response.json();
+      chatHistory = data.updated_history;
       event.source.postMessage(
         { type: "CHATBOT_RESPONSE", answer: data.answer },
         "*"
