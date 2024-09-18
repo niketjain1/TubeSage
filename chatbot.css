@@ -11,7 +11,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #ffffff;
+  background-color: #f9f6f0;
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -61,8 +61,10 @@ html {
 }
 
 .bot-message {
-  background-color: #f1f1f1;
+  background-color: #f1f1f192;
   color: #030303;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-color: #a09b9b;
 }
 
 #chat-input {
@@ -81,6 +83,9 @@ html {
   border-radius: 4px 0 0 4px;
   font-size: 14px;
   resize: none;
+  box-sizing: border-box;
+  min-height: 30px;
+  overflow-y: auto;
 }
 
 #send-btn {
