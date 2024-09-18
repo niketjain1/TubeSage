@@ -1,16 +1,14 @@
 #yt-chatbot-container {
   position: fixed;
   top: 56px; /* YouTube's header height */
-  right: -400px; /* Start off-screen */
-  width: 400px;
+  right: -420px; /* Start off-screen */
+  width: 420px;
   height: calc(100vh - 56px);
-  background-color: white;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease-in-out;
   z-index: 2000;
 }
 
-#yt-chatbot-container.open {
+#yt-chatbot-container.yt-chatbot-open {
   right: 0;
 }
 
