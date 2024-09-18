@@ -35,6 +35,8 @@ window.addEventListener("message", (event) => {
     addMessage(`Error: ${event.data.error}`);
   } else if (event.data.type === "CHATBOT_LOADING") {
     loadingIndicator.classList.toggle("hidden", !event.data.loading);
+  } else if (event.data.type === "CLEAR_CHAT") {
+    chatMessages.innerHTML = "";
   }
 });
 
@@ -43,10 +45,10 @@ const autoExpand = (field) => {
   field.style.height = "inherit";
   const computed = window.getComputedStyle(field);
   const height =
-    parseInt(computed.getPropertyValue("border-top-width"), 10) +
+    parseInt(computed.getPropertyValue("border-top-width"), 2) +
     parseInt(computed.getPropertyValue("padding-top"), 10) +
     field.scrollHeight +
-    parseInt(computed.getPropertyValue("padding-bottom"), 10) +
+    parseInt(computed.getPropertyValue("padding-bottom"), 2) +
     parseInt(computed.getPropertyValue("border-bottom-width"), 10);
 
   field.style.height = `${height}px`;
