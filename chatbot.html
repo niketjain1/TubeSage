@@ -15,14 +15,15 @@
       <div id="chat-messages"></div>
       <div id="chat-input">
         <form id="chat-form">
-          <input
-            type="text"
+          <textarea
             id="user-input"
             placeholder="Ask a question about the video..."
-          />
-          <button type="submit">Send</button>
+            rows="1"
+          ></textarea>
+          <button type="submit" id="send-btn">Send</button>
         </form>
       </div>
+      <div id="loading-indicator" class="hidden">Loading...</div>
     </div>
     <script src="chatbot.js"></script>
   </body>
