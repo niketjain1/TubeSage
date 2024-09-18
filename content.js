@@ -72,18 +72,39 @@ new MutationObserver(() => {
   const url = location.href;
   if (url !== lastUrl) {
     lastUrl = url;
-    currentVideoId = getVideoId(url);
-    fetchTranscript(currentVideoId).then(() => {
+    const newVideoId = getVideoId(url);
+
+    if (newVideoId) {
+      // New video loaded
+      currentVideoId = newVideoId;
+      fetchTranscript(currentVideoId).then(() => {
+        document
+          .getElementById("yt-chatbot-container")
+          .classList.remove("yt-chatbot-closed");
+        document
+          .getElementById("yt-chatbot-container")
+          .classList.add("yt-chatbot-open");
+      });
+      chatHistory = [];
+      clearChatMessages();
+    } else {
+      // Not a video page (e.g., home page)
       document
         .getElementById("yt-chatbot-container")
-        .classList.remove("yt-chatbot-closed");
+        .classList.remove("yt-chatbot-open");
       document
         .getElementById("yt-chatbot-container")
-        .classList.add("yt-chatbot-open");
-    });
-    chatHistory = [];
+        .classList.add("yt-chatbot-closed");
+      chatHistory = [];
+      clearChatMessages();
+    }
   }
 }).observe(document, { subtree: true, childList: true });
+
+const clearChatMessages = () => {
+  const iframe = document.getElementById("yt-chatbot-iframe");
+  iframe.contentWindow.postMessage({ type: "CLEAR_CHAT" }, "*");
+};
 
 window.addEventListener("message", async (event) => {
   if (event.data.type === "ASK_QUESTION") {
