@@ -156,7 +156,7 @@ html {
   border-top: 1px solid #e5e5e5;
   overflow-x: auto;
   white-space: nowrap;
-  overflow-y: hidden;
+  flex-shrink: 0;
 }
 
 .suggested-question {

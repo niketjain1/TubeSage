@@ -44,9 +44,10 @@ const addSuggestedQuestions = (questions) => {
   questions.forEach((question) => {
     const questionBtn = document.createElement("button");
     questionBtn.className = "suggested-question";
-    questionBtn.textContent = question;
+    const questionWithoutNumber = question.replace(/^\d+\.\s*/, "").trim();
+    questionBtn.textContent = questionWithoutNumber;
     questionBtn.addEventListener("click", () => {
-      addMessage(question, true);
+      addMessage(questionWithoutNumber, true);
       window.parent.postMessage({ type: "ASK_QUESTION", question }, "*");
     });
     suggestedQuestionsContainer.appendChild(questionBtn);
@@ -95,8 +96,6 @@ window.addEventListener("message", (event) => {
   } else if (event.data.type === "CHATBOT_ERROR") {
     removeLoader();
     addMessage(`Error: ${event.data.error}`);
-  } else if (event.data.type === "CHATBOT_LOADING") {
-    loadingIndicator.classList.toggle("hidden", !event.data.loading);
   } else if (event.data.type === "CLEAR_CHAT") {
     chatMessages.innerHTML = "";
   } else if (event.data.type === "SUGGESTED_QUESTIONS") {
@@ -109,11 +108,11 @@ const autoExpand = (field) => {
   field.style.height = "inherit";
   const computed = window.getComputedStyle(field);
   const height =
-    parseInt(computed.getPropertyValue("border-top-width"), 10) +
-    parseInt(computed.getPropertyValue("padding-top"), 10) +
+    parseInt(computed.getPropertyValue("border-top-width"), 8) +
+    parseInt(computed.getPropertyValue("padding-top"), 8) +
     field.scrollHeight +
-    parseInt(computed.getPropertyValue("padding-bottom"), 10) +
-    parseInt(computed.getPropertyValue("border-bottom-width"), 10);
+    parseInt(computed.getPropertyValue("padding-bottom"), 8) +
+    parseInt(computed.getPropertyValue("border-bottom-width"), 8);
 
   field.style.height = `${height}px`;
 };
