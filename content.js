@@ -139,13 +139,18 @@ const onPageLoad = () => {
   const isVideo = isVideoPage();
   toggleChatboxButton(isVideo);
 
+  const container = document.getElementById("yt-chatbot-container");
+
   if (isVideo) {
     currentVideoId = getVideoId(window.location.href);
     fetchTranscript(currentVideoId).then(() => {
       generateSuggestedQuestions();
     });
+    container.classList.remove("yt-chatbot-closed");
   } else {
     currentVideoId = null;
+    container.classList.remove("yt-chatbot-open");
+    container.classList.add("yt-chatbot-closed");
   }
 
   chatHistory = [];
