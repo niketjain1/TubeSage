@@ -22,8 +22,8 @@ html {
   color: white;
   padding: 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: stretch;
+  align-items: start;
 }
 
 #chatbot-header h1 {
@@ -47,7 +47,7 @@ html {
 
 .message {
   max-width: 75%;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 8px 12px;
   border-radius: 18px;
   line-height: 1.4;
@@ -102,17 +102,147 @@ html {
   background-color: #cc0000;
 }
 
-#loading-indicator {
+#action-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+  margin-left: auto;
+}
+
+#action-dropdown-btn {
+  background-color: #f1f1f1;
+  color: #030303;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#action-dropdown-content {
+  display: none;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 10px 20px;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  right: 0;
+  border-radius: 4px;
+}
+
+#action-dropdown-content button {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+#action-dropdown-content button:hover {
+  background-color: #f1f1f1;
+}
+
+#action-dropdown:hover #action-dropdown-content {
+  display: block;
+}
+
+#suggested-questions {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.suggested-question {
+  background-color: #f1f1f1;
+  border: none;
+  color: #030303;
+  padding: 8px 12px;
+  margin: 4px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.suggested-question:hover {
+  background-color: #e0e0e0;
+}
+
+#loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 70px;
+  left: 20px;
+  background-color: #f1f1f1;
   border-radius: 20px;
+  padding: 5px 10px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #333;
+  border-radius: 50%;
+  margin: 0 3px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+.message.loader {
+  background-color: transparent;
+  padding: 0;
+}
+
+.message.loader .loading-dots {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+}
+
+.message.loader .loading-dots .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #333;
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.message.loader .loading-dots .dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.message.loader .loading-dots .dot:nth-child(2) {
+  animation-delay: -0.16s;
 }

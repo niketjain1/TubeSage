@@ -9,11 +9,30 @@
   <body>
     <div id="chatbot-container">
       <div id="chatbot-header">
-        <h1>Video Q&A</h1>
+        <h1 style="font-size: 16px; font-weight: 500; margin-top: 2x">
+          Video Q&A
+        </h1>
+        <div id="action-dropdown">
+          <button id="action-dropdown-btn">Actions ▼</button>
+          <div id="action-dropdown-content">
+            <button class="action-btn" data-action="summarize">
+              Summarize
+            </button>
+            <button class="action-btn" data-action="key-points">
+              Key Points
+            </button>
+            <button class="action-btn" data-action="explain">Explain</button>
+            <button class="action-btn" data-action="related-topics">
+              Related Topics
+            </button>
+          </div>
+        </div>
         <button id="close-btn">✕</button>
       </div>
 
       <div id="chat-messages"></div>
+
+      <div id="suggested-questions"></div>
 
       <div id="chat-input">
         <form id="chat-form">
@@ -25,7 +44,12 @@
           <button id="send-btn" type="submit">Send</button>
         </form>
       </div>
-      <div id="loading-indicator" class="hidden">Loading...</div>
+
+      <div id="loading-indicator" class="hidden">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
     </div>
     <script src="chatbot.js"></script>
   </body>
