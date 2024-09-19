@@ -83,7 +83,7 @@ actionDropdownContent.addEventListener("click", (e) => {
   e.stopPropagation();
   if (e.target.classList.contains("action-btn")) {
     const action = e.target.dataset.action;
-    addMessage(`Action: ${action}`, true);
+    addMessage(`Action: ${action.toUpperCase()}`, true);
     window.parent.postMessage({ type: "ACTION_BUTTON", action }, "*");
     actionDropdownContent.style.display = "none";
   }
