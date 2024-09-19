@@ -156,6 +156,7 @@ html {
   border-top: 1px solid #e5e5e5;
   overflow-x: auto;
   white-space: nowrap;
+  overflow-y: hidden;
 }
 
 .suggested-question {
@@ -226,6 +227,8 @@ html {
 
 .message.loader .loading-dots {
   display: inline-flex;
+  margin-left: 10px;
+  justify-content: center;
   align-items: center;
   height: 20px;
 }
