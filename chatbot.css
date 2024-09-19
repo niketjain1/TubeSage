@@ -61,7 +61,7 @@ html {
 }
 
 .bot-message {
-  background-color: #f1f1f192;
+  background-color: #e8eef1;
   color: #030303;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-color: #a09b9b;
@@ -160,9 +160,9 @@ html {
 }
 
 .suggested-question {
-  background-color: #f1f1f1;
+  background-color: #8cd6fb;
   border: none;
-  color: #030303;
+  color: #003060;
   padding: 8px 12px;
   margin: 4px;
   border-radius: 16px;
@@ -173,7 +173,8 @@ html {
 }
 
 .suggested-question:hover {
-  background-color: #e0e0e0;
+  background-color: #055c9d;
+  color: white;
 }
 
 #loading-indicator {
