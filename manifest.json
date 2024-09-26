@@ -1,24 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Video Q&A Chatbot",
+  "name": "YouTube Chatbot Extension",
   "version": "1.0",
   "description": "A chatbot that answers questions based on YouTube video content",
-  "permissions": ["activeTab"],
+  "permissions": ["tabs", "scripting"],
   "host_permissions": [
     "https://www.youtube.com/*",
     "http://localhost:8000/",
     "https://api.openai.com/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/watch*"],
+      "matches": ["https://www.youtube.com/*"],
       "js": ["content.js"],
       "css": ["styles.css"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["chatbot.html", "chatbot.css", "chatbot.js"],
+      "resources": ["chatbot.html"],
       "matches": ["https://www.youtube.com/*"]
     }
   ]
