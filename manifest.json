@@ -4,7 +4,11 @@
   "version": "1.0",
   "description": "A chatbot that answers questions based on YouTube video content",
   "permissions": ["activeTab"],
-  "host_permissions": ["https://www.youtube.com/*", "http://localhost:8000/"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "http://localhost:8000/",
+    "https://api.openai.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/watch*"],
