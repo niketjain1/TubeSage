@@ -10,6 +10,7 @@ const actionDropdownContent = document.getElementById(
 const suggestedQuestionsContainer = document.getElementById(
   "suggested-questions"
 );
+const sendBtn = document.getElementById("send-btn");
 
 const addMessage = (content, isUser = false) => {
   const messageDiv = document.createElement("div");
@@ -48,13 +49,16 @@ const addSuggestedQuestions = (questions) => {
     questionBtn.textContent = questionWithoutNumber;
     questionBtn.addEventListener("click", () => {
       addMessage(questionWithoutNumber, true);
-      window.parent.postMessage({ type: "ASK_QUESTION", question }, "*");
+      window.parent.postMessage(
+        { type: "ASK_QUESTION", question: questionWithoutNumber },
+        "*"
+      );
     });
     suggestedQuestionsContainer.appendChild(questionBtn);
   });
 };
 
-chatForm.addEventListener("submit", (e) => {
+const handleSubmit = (e) => {
   e.preventDefault();
   const question = userInput.value.trim();
   if (question) {
@@ -62,6 +66,21 @@ chatForm.addEventListener("submit", (e) => {
     window.parent.postMessage({ type: "ASK_QUESTION", question }, "*");
     userInput.value = "";
     userInput.style.height = "auto";
+    sendBtn.disabled = true;
+  }
+};
+
+chatForm.addEventListener("submit", handleSubmit);
+
+userInput.addEventListener("input", () => {
+  sendBtn.disabled = userInput.value.trim() === "";
+  autoExpand(userInput);
+});
+
+userInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    handleSubmit(e);
   }
 });
 
@@ -93,17 +112,20 @@ window.addEventListener("message", (event) => {
   if (event.data.type === "CHATBOT_RESPONSE") {
     removeLoader();
     addMessage(event.data.answer);
+    sendBtn.disabled = userInput.value.trim() === "";
   } else if (event.data.type === "CHATBOT_ERROR") {
     removeLoader();
     addMessage(`Error: ${event.data.error}`);
+    sendBtn.disabled = userInput.value.trim() === "";
   } else if (event.data.type === "CLEAR_CHAT") {
     chatMessages.innerHTML = "";
   } else if (event.data.type === "SUGGESTED_QUESTIONS") {
     addSuggestedQuestions(event.data.questions);
+  } else if (event.data.type === "CHATBOT_LOADING") {
+    sendBtn.disabled = event.data.loading;
   }
 });
 
-// Function to auto-expand textarea
 const autoExpand = (field) => {
   field.style.height = "inherit";
   const computed = window.getComputedStyle(field);
@@ -116,5 +138,3 @@ const autoExpand = (field) => {
 
   field.style.height = `${height}px`;
 };
-
-userInput.addEventListener("input", () => autoExpand(userInput));

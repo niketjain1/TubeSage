@@ -96,10 +96,17 @@ html {
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.3s ease;
 }
 
 #send-btn:hover {
   background-color: #cc0000;
+}
+
+#send-btn:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
 }
 
 #action-dropdown {
