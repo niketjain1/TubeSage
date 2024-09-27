@@ -4,26 +4,29 @@
   "version": "1.0",
   "description": "A chatbot that answers questions based on YouTube video content",
   "permissions": ["tabs", "scripting", "storage"],
-  "host_permissions": [
-    "https://www.youtube.com/*",
-    "http://localhost:8000/",
-    "https://api.openai.com/*"
-  ],
+  "host_permissions": ["https://www.youtube.com/*", "https://api.openai.com/*"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background/background.js"
   },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"],
-      "css": ["styles.css"]
+      "js": ["content/content.js"],
+      "css": ["styles/styles.css"]
     }
   ],
+  "action": {
+    "default_popup": "chatbot.html"
+  },
   "web_accessible_resources": [
     {
-      "resources": ["chatbot.html", "crypto-js.min.js", "options.html"],
+      "resources": [
+        "lib/crypto-js.min.js",
+        "chatbot.html",
+        "options/options.html"
+      ],
       "matches": ["https://www.youtube.com/*"]
     }
   ],
-  "options_page": "options.html"
+  "options_page": "options/options.html"
 }
