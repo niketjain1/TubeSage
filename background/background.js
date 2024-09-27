@@ -1,11 +1,11 @@
-importScripts("crypto-js.min.js");
+importScripts("../lib/crypto-js.min.js");
 
 const ENCRYPTION_KEY = "S8g$5qW7pR9nE2fX#dV1zK3tU!xP6uM@jH0yC4iB^vL";
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(["encryptedApiKey"], (result) => {
     if (!result.encryptedApiKey) {
-      chrome.tabs.create({ url: "options.html" });
+      chrome.tabs.create({ url: "options/options.html" });
     }
   });
 });
@@ -81,7 +81,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   ) {
     chrome.scripting.executeScript({
       target: { tabId: tabId },
-      files: ["content.js"],
+      files: ["content/content.js"],
     });
   }
 });
