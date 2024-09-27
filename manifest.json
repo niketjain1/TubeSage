@@ -3,7 +3,7 @@
   "name": "YouTube Chatbot Extension",
   "version": "1.0",
   "description": "A chatbot that answers questions based on YouTube video content",
-  "permissions": ["tabs", "scripting"],
+  "permissions": ["tabs", "scripting", "storage"],
   "host_permissions": [
     "https://www.youtube.com/*",
     "http://localhost:8000/",
@@ -21,8 +21,9 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["chatbot.html"],
+      "resources": ["chatbot.html", "crypto-js.min.js", "options.html"],
       "matches": ["https://www.youtube.com/*"]
     }
-  ]
+  ],
+  "options_page": "options.html"
 }
