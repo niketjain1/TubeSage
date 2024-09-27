@@ -182,11 +182,11 @@
       "*"
     );
   };
+
   const handleActionButton = async (action) => {
     if (!transcript) return;
     const apiKey = await getApiKey();
 
-    console.log({ action });
     const actionPrompts = {
       summarize:
         "Provide a brief summary of the video content in about 3-4 sentences.",
@@ -227,6 +227,70 @@
       { type: "CHATBOT_RESPONSE", answer: result },
       "*"
     );
+  };
+
+  const askQuestion = async (question) => {
+    const apiKey = await getApiKey();
+    if (!apiKey) {
+      throw new Error(
+        "No API key available. Please set your OpenAI API Key in the extension options."
+      );
+    }
+
+    try {
+      isWaitingForResponse = true;
+
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a youtube question answerer assistant that answers questions based on the provided video transcript.",
+              },
+              { role: "user", content: `Transcript: ${transcript}` },
+              ...chatHistory,
+              { role: "user", content: question },
+            ],
+          }),
+        }
+      );
+
+      console.log({ response });
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          alert(
+            "Invalid API key. Please check your OpenAI API key and try again."
+          );
+        } else {
+          alert(`OpenAI API error: ${errorData.error.message}`);
+        }
+        isWaitingForResponse = false;
+        return;
+      }
+
+      const data = await response.json();
+      const answer = data.choices[0].message.content;
+
+      chatHistory.push({ role: "user", content: question });
+      chatHistory.push({ role: "assistant", content: answer });
+
+      return answer;
+    } catch (error) {
+      console.error("Error getting answer:", error);
+      throw error;
+    } finally {
+      isWaitingForResponse = false;
+    }
   };
 
   const clearChatMessages = () => {
@@ -276,58 +340,20 @@
   window.addEventListener("message", async (event) => {
     if (event.data.type === "ASK_QUESTION") {
       try {
-        const apiKey = await getApiKey();
-        isWaitingForResponse = true;
-        event.source.postMessage(
-          { type: "CHATBOT_LOADING", loading: true },
-          "*"
-        );
-
-        const response = await fetch(
-          "https://api.openai.com/v1/chat/completions",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-              model: "gpt-4o-mini",
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "You are a youtube question answerer assistant that answers questions based on the provided video transcript. Keep the answer short and concise in english. Don't mention the keyword 'transcript' while answering the question. The answer should be in third person in respective of the person in the video. If the question is not related to the video, say respond with 'I'm sorry, I can't answer that question. Its out of context.'",
-                },
-                { role: "user", content: `Transcript: ${transcript}` },
-                ...chatHistory,
-                { role: "user", content: event.data.question },
-              ],
-            }),
-          }
-        );
-
-        const data = await response.json();
-        const answer = data.choices[0].message.content;
-
-        chatHistory.push({ role: "user", content: event.data.question });
-        chatHistory.push({ role: "assistant", content: answer });
-
+        const answer = await askQuestion(event.data.question);
         event.source.postMessage(
           { type: "CHATBOT_RESPONSE", answer: answer },
           "*"
         );
       } catch (error) {
-        console.error("Error getting answer:", error);
         event.source.postMessage(
           {
             type: "CHATBOT_ERROR",
-            error: "Failed to get answer. Please try again.",
+            error: error.message,
           },
           "*"
         );
       } finally {
-        isWaitingForResponse = false;
         event.source.postMessage(
           { type: "CHATBOT_LOADING", loading: false },
           "*"
