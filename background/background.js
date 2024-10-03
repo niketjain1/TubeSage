@@ -1,6 +1,7 @@
 importScripts("../lib/crypto-js.min.js");
 
-const ENCRYPTION_KEY = "S8g$5qW7pR9nE2fX#dV1zK3tU!xP6uM@jH0yC4iB^vL";
+const randomNumber = Math.floor(Math.random() * 1000000);
+const ENCRYPTION_KEY = `S8g$5qW7pR9nE2fX#dV1zK3tU!xP6uM@jH0yC4iB^vL${randomNumber}`;
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(["encryptedApiKey"], (result) => {
