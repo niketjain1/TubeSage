@@ -2,18 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const apiKeyInput = document.getElementById("apiKey");
   const saveButton = document.getElementById("save");
 
-  console.log({ saveButton });
-
   saveButton.addEventListener("click", () => {
     const apiKey = apiKeyInput.value.trim();
-    console.log("API Key:", apiKey);
     if (apiKey) {
       chrome.runtime.sendMessage(
         { action: "encryptAndStoreApiKey", apiKey: apiKey },
         (response) => {
           if (response && response.success) {
             alert("API Key saved successfully!");
-            // Verify storage
+
             chrome.storage.local.get(["encryptedApiKey"], (result) => {
               if (result.encryptedApiKey) {
                 console.log("Encrypted API key found in storage");
@@ -36,6 +33,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-// Log when the script is loaded
-console.log("Options script loaded");
