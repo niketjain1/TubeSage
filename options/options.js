@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
               } else {
                 console.error("Encrypted API key not found in storage");
               }
+              window.close();
             });
-            window.close();
           } else {
             const errorMessage =
               response && response.error ? response.error : "Unknown error";
