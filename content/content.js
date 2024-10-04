@@ -47,18 +47,6 @@
     });
   };
 
-  const openTranscriptPanel = () => {
-    const transcriptButton = document.querySelector(
-      'button[aria-label="Show transcript"]'
-    );
-
-    if (transcriptButton) {
-      transcriptButton.click();
-      return true;
-    }
-    return false;
-  };
-
   const extractTranscriptText = () => {
     const transcriptItems = document.querySelectorAll(
       "ytd-transcript-segment-renderer"
@@ -127,7 +115,7 @@
               reject("No transcript found");
               closeTranscriptButton.click();
             }
-          }, 1000);
+          }, 4000);
         } else {
           attempts++;
           if (attempts < maxAttempts) {
@@ -254,7 +242,7 @@
               {
                 role: "system",
                 content:
-                  "You are a youtube question answerer assistant that answers questions based on the provided video transcript.",
+                  "You are a youtube question answerer assitant that answers questions based on the provided video transcript. Keep the answer short and concise in english. Don't mention the keyword 'transcript' while answering the question. The answer should be in third person in respective of the person in the video. If the question is not related to the video, say respond with 'I'm sorry, I can't answer that question. Its out of context.'",
               },
               { role: "user", content: `Transcript: ${transcript}` },
               ...chatHistory,
@@ -306,7 +294,6 @@
 
     if (isVideo) {
       currentVideoId = getVideoId(window.location.href);
-      apiKey = getApiKey();
       try {
         transcript = await fetchTranscript();
         await generateSuggestedQuestions();
