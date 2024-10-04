@@ -3,15 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YouTube Q&A Chatbot</title>
+    <title>YouTube Video Assistant</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="chatbot.css" />
   </head>
   <body>
     <div id="chatbot-container">
       <div id="chatbot-header">
-        <h1 style="font-size: 16px; font-weight: 500; margin-top: 2x">
-          Video Q&A
-        </h1>
+        <div id="header-left">
+          <h1>Youtube Video Assistant</h1>
+        </div>
         <div id="action-dropdown">
           <button id="action-dropdown-btn">Actions ▼</button>
           <div id="action-dropdown-content">
@@ -29,11 +33,8 @@
         </div>
         <button id="close-btn">✕</button>
       </div>
-
       <div id="chat-messages"></div>
-
       <div id="suggested-questions"></div>
-
       <div id="chat-input">
         <form id="chat-form">
           <textarea
@@ -41,14 +42,8 @@
             placeholder="Ask a question..."
             rows="1"
           ></textarea>
-          <button id="send-btn" type="submit">Send</button>
+          <button id="send-btn" type="submit" disabled>Send</button>
         </form>
-      </div>
-
-      <div id="loading-indicator" class="hidden">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
       </div>
     </div>
     <script src="chatbot.js"></script>
