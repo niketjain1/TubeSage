@@ -31,6 +31,19 @@
             </button>
           </div>
         </div>
+        <button id="settings-btn">
+          <img
+            src="assets/settings.png"
+            style="
+              width: 20px;
+              height: 20px;
+              margin: 0px 4px;
+              color: white;
+              cursor: pointer;
+            "
+            title="Settings"
+          />
+        </button>
         <button id="close-btn">✕</button>
       </div>
       <div id="chat-messages"></div>
@@ -44,6 +57,20 @@
           ></textarea>
           <button id="send-btn" type="submit" disabled>Send</button>
         </form>
+      </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <h2>Settings</h2>
+        <label for="api-key-input">OpenAI API Key:</label>
+        <input
+          type="password"
+          id="api-key-input"
+          placeholder="Enter your API key"
+        />
+        <button id="save-api-key">Save</button>
+        <button id="close-modal">Close</button>
       </div>
     </div>
     <script src="chatbot.js"></script>

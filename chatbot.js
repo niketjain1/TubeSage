@@ -11,6 +11,49 @@ const suggestedQuestionsContainer = document.getElementById(
   "suggested-questions"
 );
 const sendBtn = document.getElementById("send-btn");
+const settingsBtn = document.getElementById("settings-btn");
+const settingsModal = document.getElementById("settings-modal");
+const apiKeyInput = document.getElementById("api-key-input");
+const saveApiKeyBtn = document.getElementById("save-api-key");
+const closeModalBtn = document.getElementById("close-modal");
+
+settingsBtn.addEventListener("click", () => {
+  settingsModal.style.display = "block";
+  chrome.storage.local.get(["encryptedApiKey"], (result) => {
+    if (result.encryptedApiKey) {
+      apiKeyInput.value = "********";
+    }
+  });
+});
+
+closeModalBtn.addEventListener("click", () => {
+  settingsModal.style.display = "none";
+});
+
+saveApiKeyBtn.addEventListener("click", () => {
+  const newApiKey = apiKeyInput.value;
+  if (newApiKey && newApiKey !== "********") {
+    chrome.runtime.sendMessage(
+      { action: "encryptAndStoreApiKey", apiKey: newApiKey },
+      (response) => {
+        if (response && response.success) {
+          alert("API Key saved successfully!");
+          settingsModal.style.display = "none";
+        } else {
+          alert("Error saving API Key. Please try again.");
+        }
+      }
+    );
+  } else {
+    alert("Please enter a valid API Key.");
+  }
+});
+
+window.addEventListener("click", (event) => {
+  if (event.target === settingsModal) {
+    settingsModal.style.display = "none";
+  }
+});
 
 const addMessage = (content, isUser = false) => {
   const messageDiv = document.createElement("div");
