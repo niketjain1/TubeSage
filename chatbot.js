@@ -16,6 +16,11 @@ const settingsModal = document.getElementById("settings-modal");
 const apiKeyInput = document.getElementById("api-key-input");
 const saveApiKeyBtn = document.getElementById("save-api-key");
 const closeModalBtn = document.getElementById("close-modal");
+const errorMessageElement = document.getElementById("error-message");
+
+const showError = (message) => {
+  addMessage(message);
+};
 
 settingsBtn.addEventListener("click", () => {
   settingsModal.style.display = "block";
@@ -62,17 +67,7 @@ const addMessage = (content, isUser = false) => {
   const textSpan = document.createElement("span");
   textSpan.textContent = content;
   messageDiv.appendChild(textSpan);
-
   chatMessages.appendChild(messageDiv);
-
-  if (isUser) {
-    const loaderDiv = document.createElement("div");
-    loaderDiv.className = "message bot-message loader";
-    loaderDiv.innerHTML =
-      '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-    chatMessages.appendChild(loaderDiv);
-  }
-
   chatMessages.scrollTop = chatMessages.scrollHeight;
 };
 
@@ -80,6 +75,20 @@ const removeLoader = () => {
   const loader = chatMessages.querySelector(".loader");
   if (loader) {
     loader.remove();
+  }
+};
+
+const setLoading = (isLoading) => {
+  sendBtn.disabled = isLoading;
+  userInput.disabled = isLoading;
+  if (isLoading) {
+    const loaderDiv = document.createElement("div");
+    loaderDiv.className = "message bot-message loader";
+    loaderDiv.innerHTML =
+      '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+    chatMessages.appendChild(loaderDiv);
+  } else {
+    removeLoader();
   }
 };
 
@@ -106,6 +115,7 @@ const handleSubmit = (e) => {
   const question = userInput.value.trim();
   if (question) {
     addMessage(question, true);
+    setLoading(true);
     window.parent.postMessage({ type: "ASK_QUESTION", question }, "*");
     userInput.value = "";
     userInput.style.height = "auto";
@@ -152,20 +162,27 @@ actionDropdownContent.addEventListener("click", (e) => {
 });
 
 window.addEventListener("message", (event) => {
-  if (event.data.type === "CHATBOT_RESPONSE") {
+  if (event.data.type === "SHOW_ERROR") {
+    showError(event.data.message);
+    setLoading(false);
+  } else if (event.data.type === "CHATBOT_RESPONSE") {
     removeLoader();
     addMessage(event.data.answer);
     sendBtn.disabled = userInput.value.trim() === "";
+    setLoading(false);
   } else if (event.data.type === "CHATBOT_ERROR") {
     removeLoader();
     addMessage(`Error: ${event.data.error}`);
     sendBtn.disabled = userInput.value.trim() === "";
+    setLoading(false);
   } else if (event.data.type === "CLEAR_CHAT") {
     chatMessages.innerHTML = "";
+    errorMessageElement.style.display = "none";
   } else if (event.data.type === "SUGGESTED_QUESTIONS") {
     addSuggestedQuestions(event.data.questions);
   } else if (event.data.type === "CHATBOT_LOADING") {
     sendBtn.disabled = event.data.loading;
+    setLoading(event.data.loading);
   }
 });
 
