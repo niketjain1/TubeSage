@@ -12,6 +12,12 @@
   let isWaitingForResponse = false;
   let apiKey = null;
 
+  chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === "local" && changes.encryptedApiKey) {
+      onPageLoad();
+    }
+  });
+
   const showError = (message) => {
     const iframe = document.getElementById("yt-chatbot-iframe");
     iframe.contentWindow.postMessage(
