@@ -5,7 +5,6 @@ This Chrome extension enhances your YouTube experience by providing an AI-powere
 ## Features
 
 - AI-powered Q&A based on video content
-- Transcript extraction from YouTube videos
 - Customizable actions like summarizing, highlighting key points, and suggesting related topics
 - Secure storage of OpenAI API key
 
