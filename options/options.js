@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   saveButton.addEventListener("click", () => {
     const apiKey = apiKeyInput.value.trim();
-    if (apiKey) {
+    if (apiKey && apiKey !== "********") {
       chrome.runtime.sendMessage(
         { action: "encryptAndStoreApiKey", apiKey: apiKey },
         (response) => {

@@ -1,7 +1,7 @@
 importScripts("../lib/crypto-js.min.js");
 
-const randomNumber = Math.floor(Math.random() * 1000000);
-const ENCRYPTION_KEY = `S8g$5qW7pR9nE2fX#dV1zK3tU!xP6uM@jH0yC4iB^vL${randomNumber}`;
+// const randomNumber = Math.floor(Math.random() * 1000000);
+const ENCRYPTION_KEY = `S8g$5qW7pR9nE2fX#dV1zK3tU!xP6uM@jH0yC4iB^vL`;
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get(["encryptedApiKey"], (result) => {
@@ -30,7 +30,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           });
         } else {
           console.log("API key stored successfully");
-          // Verify the storage
           chrome.storage.local.get(["encryptedApiKey"], (result) => {
             if (result.encryptedApiKey === encryptedApiKey) {
               console.log("Storage verification successful");
