@@ -188,6 +188,7 @@ html {
 
 .suggested-question:hover {
   background-color: #eeeeee;
+  border-color: rgb(74, 74, 228);
 }
 
 #loading-indicator {
@@ -321,4 +322,13 @@ html {
   background-color: #f1f1f1;
   color: black;
   margin-left: 10px;
+}
+
+#error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  display: none;
 }
