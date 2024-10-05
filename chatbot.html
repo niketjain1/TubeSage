@@ -65,11 +65,14 @@
       <div class="modal-content">
         <h2>Settings</h2>
         <label for="api-key-input">OpenAI API Key:</label>
-        <input
-          type="password"
-          id="api-key-input"
-          placeholder="Enter your API key"
-        />
+        <div class="input-group">
+          <input
+            type="password"
+            id="api-key-input"
+            placeholder="Enter your API key"
+          />
+          <button id="toggle-visibility" type="button">👁️‍🗨️</button>
+        </div>
         <button id="save-api-key">Save</button>
         <button id="close-modal">Close</button>
       </div>

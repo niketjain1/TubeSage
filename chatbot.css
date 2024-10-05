@@ -332,3 +332,28 @@ html {
   border-radius: 4px;
   display: none;
 }
+
+.input-group {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.input-group input {
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+
+#toggle-visibility {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-left: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0px 10px;
+  margin: 10px 0.5px;
+}
+
+#toggle-visibility:hover {
+  background-color: #e0e0e0;
+}

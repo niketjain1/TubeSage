@@ -17,6 +17,7 @@ const apiKeyInput = document.getElementById("api-key-input");
 const saveApiKeyBtn = document.getElementById("save-api-key");
 const closeModalBtn = document.getElementById("close-modal");
 const errorMessageElement = document.getElementById("error-message");
+const toggleVisibilityBtn = document.getElementById("toggle-visibility");
 
 const showError = (message) => {
   addMessage(message);
@@ -27,12 +28,24 @@ settingsBtn.addEventListener("click", () => {
   chrome.storage.local.get(["encryptedApiKey"], (result) => {
     if (result.encryptedApiKey) {
       apiKeyInput.value = "********";
+      apiKeyInput.type = "password";
+      toggleVisibilityBtn.textContent = "🫣";
     }
   });
 });
 
 closeModalBtn.addEventListener("click", () => {
   settingsModal.style.display = "none";
+});
+
+toggleVisibilityBtn.addEventListener("click", () => {
+  if (apiKeyInput.type === "password") {
+    apiKeyInput.type = "text";
+    toggleVisibilityBtn.textContent = "👁️";
+  } else {
+    apiKeyInput.type = "password";
+    toggleVisibilityBtn.textContent = "🫣";
+  }
 });
 
 saveApiKeyBtn.addEventListener("click", () => {
@@ -43,7 +56,11 @@ saveApiKeyBtn.addEventListener("click", () => {
       (response) => {
         if (response && response.success) {
           alert("API Key saved successfully!");
+          apiKeyInput.value = "********";
+          apiKeyInput.type = "password";
+          toggleVisibilityBtn.textContent = "👁️‍🗨️";
           settingsModal.style.display = "none";
+          window.location.reload();
         } else {
           alert("Error saving API Key. Please try again.");
         }
