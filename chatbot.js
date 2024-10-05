@@ -77,7 +77,11 @@ window.addEventListener("click", (event) => {
   }
 });
 
-const addMessage = (content, isUser = false) => {
+const addMessage = (
+  content,
+  isUser = false,
+  answerSuggestedQuestion = false
+) => {
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
 
@@ -85,6 +89,9 @@ const addMessage = (content, isUser = false) => {
   textSpan.textContent = content;
   messageDiv.appendChild(textSpan);
   chatMessages.appendChild(messageDiv);
+  if (answerSuggestedQuestion) {
+    setLoading(true);
+  }
   chatMessages.scrollTop = chatMessages.scrollHeight;
 };
 
@@ -117,7 +124,7 @@ const addSuggestedQuestions = (questions) => {
     const questionWithoutNumber = question.replace(/^\d+\.\s*/, "").trim();
     questionBtn.textContent = questionWithoutNumber;
     questionBtn.addEventListener("click", () => {
-      addMessage(questionWithoutNumber, true);
+      addMessage(questionWithoutNumber, true, true);
       window.parent.postMessage(
         { type: "ASK_QUESTION", question: questionWithoutNumber },
         "*"
@@ -197,6 +204,7 @@ window.addEventListener("message", (event) => {
     errorMessageElement.style.display = "none";
   } else if (event.data.type === "SUGGESTED_QUESTIONS") {
     addSuggestedQuestions(event.data.questions);
+    setLoading(false);
   } else if (event.data.type === "CHATBOT_LOADING") {
     sendBtn.disabled = event.data.loading;
     setLoading(event.data.loading);
