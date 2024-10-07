@@ -27,7 +27,7 @@ settingsBtn.addEventListener("click", () => {
   settingsModal.style.display = "block";
   chrome.storage.local.get(["encryptedApiKey"], (result) => {
     if (result.encryptedApiKey) {
-      apiKeyInput.value = "********";
+      apiKeyInput.value = "";
       apiKeyInput.type = "password";
       toggleVisibilityBtn.textContent = "🫣";
     }
