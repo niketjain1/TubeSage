@@ -11,6 +11,7 @@
   let transcript = null;
   let isWaitingForResponse = false;
   let apiKey = null;
+  let suggestedQuestionsGenerated = false;
 
   chrome.storage.onChanged.addListener((changes, namespace) => {
     if (namespace === "local" && changes.encryptedApiKey) {
@@ -93,12 +94,16 @@
     const toggleButton = document.createElement("button");
     toggleButton.id = "yt-chatbot-toggle";
     toggleButton.innerHTML = "💬";
-    toggleButton.title = "Toggle Q&A Chatbot";
+    toggleButton.title = "Toggle youtube chatbot";
     document.body.appendChild(toggleButton);
 
     toggleButton.addEventListener("click", () => {
       container.classList.toggle("yt-chatbot-closed");
       container.classList.toggle("yt-chatbot-open");
+      if (!suggestedQuestionsGenerated) {
+        generateSuggestedQuestions(apiKey);
+        suggestedQuestionsGenerated = true;
+      }
     });
 
     // Initially hide the button, it will be shown if it's a video page
@@ -171,7 +176,7 @@
     return data;
   };
 
-  const generateSuggestedQuestions = async (apiKey) => {
+  const generateSuggestedQuestions = async () => {
     if (!transcript) {
       showError(
         "No transcript available. Suggested questions cannot be generated."
@@ -214,7 +219,7 @@
     }
   };
 
-  const handleActionButton = async (action, apiKey) => {
+  const handleActionButton = async (action) => {
     if (!transcript) {
       showError(
         "No transcript available. Cannot perform the requested action."
@@ -264,7 +269,7 @@
     }
   };
 
-  const askQuestion = async (question, apiKey) => {
+  const askQuestion = async (question) => {
     if (!transcript) {
       showError("No transcript available. Cannot answer questions.");
       return;
@@ -319,7 +324,6 @@
       currentVideoId = getVideoId(window.location.href);
       try {
         transcript = await fetchTranscript();
-        await generateSuggestedQuestions(apiKey);
       } catch (error) {
         console.error("Error fetching transcript:", error);
       }
