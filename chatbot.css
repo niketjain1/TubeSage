@@ -318,10 +318,18 @@ html {
   color: white;
 }
 
+#save-api-key:hover {
+  background-color: #d50000;
+}
+
 #close-modal {
   background-color: #f1f1f1;
   color: black;
   margin-left: 10px;
+}
+
+#close-modal:hover {
+  background-color: #e0e0e0;
 }
 
 #error-message {
