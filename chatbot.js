@@ -97,9 +97,9 @@ const addMessage = (
   
   if (!isUser) {
     content = formatResponse(content);
-    messageDiv.innerHTML = content; // Use innerHTML to render HTML content
+    messageDiv.innerHTML = content;
   } else {
-    messageDiv.textContent = content; // Use textContent for user messages
+    messageDiv.textContent = content;
   }
 
   chatMessages.appendChild(messageDiv);
