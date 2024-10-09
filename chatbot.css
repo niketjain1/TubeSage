@@ -73,6 +73,14 @@ html {
   border-color: #a09b9b;
 }
 
+.bot-message p {
+  margin: 5px 0;
+}
+
+.bot-message strong {
+  font-weight: bold;
+}
+
 #chat-input {
   border-top: 1px solid #e0e0e0;
   padding: 16px;

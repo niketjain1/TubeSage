@@ -19,6 +19,16 @@ const closeModalBtn = document.getElementById("close-modal");
 const errorMessageElement = document.getElementById("error-message");
 const toggleVisibilityBtn = document.getElementById("toggle-visibility");
 
+const formatResponse = (response) => {
+  // Convert markdown-style bold to HTML bold
+  response = response.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+  // Convert numbered lines to paragraphs
+  response = response.replace(/^\d+\.\s(.*)$/gm, "<p>$&</p>");
+
+  return response;
+};
+
 const showError = (message) => {
   addMessage(message);
 };
@@ -84,10 +94,14 @@ const addMessage = (
 ) => {
   const messageDiv = document.createElement("div");
   messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
+  
+  if (!isUser) {
+    content = formatResponse(content);
+    messageDiv.innerHTML = content;
+  } else {
+    messageDiv.textContent = content;
+  }
 
-  const textSpan = document.createElement("span");
-  textSpan.textContent = content;
-  messageDiv.appendChild(textSpan);
   chatMessages.appendChild(messageDiv);
   if (answerSuggestedQuestion) {
     setLoading(true);
