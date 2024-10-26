@@ -328,6 +328,7 @@
         console.error("Error fetching transcript:", error);
       }
       container.classList.remove("yt-chatbot-closed");
+      suggestedQuestionsGenerated = false; // Reset flag for new video
     } else {
       currentVideoId = null;
       transcript = null;

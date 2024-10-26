@@ -13,63 +13,48 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "encryptAndStoreApiKey") {
-    console.log("Received request to encrypt and store API key");
-    try {
+    const userProvidedKey = prompt(
+      "Enter a secure password to encrypt your API key:"
+    );
+    if (userProvidedKey) {
+      const dynamicKey = CryptoJS.SHA256(userProvidedKey).toString();
       const encryptedApiKey = CryptoJS.AES.encrypt(
         request.apiKey,
-        ENCRYPTION_KEY
+        dynamicKey
       ).toString();
-      console.log("API key encrypted successfully");
 
-      chrome.storage.local.set({ encryptedApiKey: encryptedApiKey }, () => {
-        if (chrome.runtime.lastError) {
-          console.error("Error storing API key:", chrome.runtime.lastError);
-          sendResponse({
-            success: false,
-            error: chrome.runtime.lastError.message,
-          });
+      chrome.storage.local.set({ encryptedApiKey }, () => {
+        sendResponse({ success: true });
+      });
+    } else {
+      sendResponse({ success: false, error: "Encryption key is required" });
+    }
+    return true;
+  } else if (request.action === "getApiKey") {
+    const userProvidedKey = prompt(
+      "Enter the password to decrypt your API key:"
+    );
+    if (userProvidedKey) {
+      const dynamicKey = CryptoJS.SHA256(userProvidedKey).toString();
+      chrome.storage.local.get(["encryptedApiKey"], (result) => {
+        if (result.encryptedApiKey) {
+          try {
+            const decryptedApiKey = CryptoJS.AES.decrypt(
+              result.encryptedApiKey,
+              dynamicKey
+            ).toString(CryptoJS.enc.Utf8);
+            sendResponse({ apiKey: decryptedApiKey });
+          } catch (error) {
+            sendResponse({ apiKey: null, error: "Failed to decrypt API key" });
+          }
         } else {
-          console.log("API key stored successfully");
-          chrome.storage.local.get(["encryptedApiKey"], (result) => {
-            if (result.encryptedApiKey === encryptedApiKey) {
-              console.log("Storage verification successful");
-              sendResponse({ success: true });
-            } else {
-              console.error("Storage verification failed");
-              sendResponse({
-                success: false,
-                error: "Storage verification failed",
-              });
-            }
-          });
+          sendResponse({ apiKey: null });
         }
       });
-    } catch (error) {
-      console.error("Error encrypting API key:", error);
-      sendResponse({ success: false, error: error.message });
+    } else {
+      sendResponse({ apiKey: null, error: "Decryption key is required" });
     }
-    return true; // Indicates that the response is asynchronous
-  } else if (request.action === "getApiKey") {
-    console.log("Received request to get API key");
-    chrome.storage.local.get(["encryptedApiKey"], (result) => {
-      if (result.encryptedApiKey) {
-        try {
-          const decryptedApiKey = CryptoJS.AES.decrypt(
-            result.encryptedApiKey,
-            ENCRYPTION_KEY
-          ).toString(CryptoJS.enc.Utf8);
-          console.log("API key decrypted successfully");
-          sendResponse({ apiKey: decryptedApiKey });
-        } catch (error) {
-          console.error("Error decrypting API key:", error);
-          sendResponse({ apiKey: null, error: error.message });
-        }
-      } else {
-        console.log("No stored API key found");
-        sendResponse({ apiKey: null });
-      }
-    });
-    return true; // Indicates that the response is asynchronous
+    return true;
   }
 });
 
