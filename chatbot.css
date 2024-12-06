@@ -374,3 +374,8 @@ html {
 #toggle-visibility:hover {
   background-color: #e0e0e0;
 }
+
+#yt-chatbot-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

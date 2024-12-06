@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Chatbot Extension",
+  "name": "Youtube chatbot assistant",
   "version": "1.0",
-  "description": "A chatbot that answers questions based on YouTube video content",
+  "description": "Enhance your YouTube experience by asking questions, summarizing videos, and extracting key points effortlessly.",
   "permissions": ["tabs", "scripting", "storage"],
+  "icons": {
+    "128": "assets/icon128.png"
+  },
   "host_permissions": ["https://www.youtube.com/*", "https://api.openai.com/*"],
   "background": {
     "service_worker": "background/background.js"

@@ -36,10 +36,22 @@
     return urlParams.get("v");
   };
 
-  const toggleChatboxButton = (show) => {
+  const toggleChatboxButton = (show, message = "") => {
     const toggleButton = document.getElementById("yt-chatbot-toggle");
     if (toggleButton) {
-      toggleButton.style.display = show ? "flex" : "none";
+      if (show) {
+        toggleButton.style.display = "flex";
+        toggleButton.title = "Toggle youtube chatbot";
+      } else {
+        toggleButton.style.display = "none";
+        if (message) {
+          toggleButton.style.display = "flex";
+          toggleButton.style.opacity = "0.5";
+          toggleButton.style.cursor = "not-allowed";
+          toggleButton.title = message;
+          toggleButton.disabled = true;
+        }
+      }
     }
   };
 
@@ -112,43 +124,51 @@
 
   const fetchTranscript = () => {
     return new Promise((resolve, reject) => {
-      const maxAttempts = 5;
+      const maxAttempts = 10;
       let attempts = 0;
 
       const tryOpenTranscript = () => {
-        const openTranscriptButton = document.querySelector(
-          'button[aria-label="Show transcript"]'
-        );
-        const closeTranscriptButton = document.querySelector(
-          'button[aria-label="Close transcript"]'
-        );
-
-        if (openTranscriptButton) {
-          openTranscriptButton.click();
-          setTimeout(() => {
-            const transcriptText = extractTranscriptText();
-            if (transcriptText) {
-              resolve(transcriptText);
-            } else {
-              reject(new Error("No transcript found"));
-            }
-            if (closeTranscriptButton) closeTranscriptButton.click();
-          }, 1000);
-        } else {
+        const menuButton = document.querySelector('button[aria-label="More actions"]');
+        if (!menuButton) {
           attempts++;
           if (attempts < maxAttempts) {
             setTimeout(tryOpenTranscript, 2000);
           } else {
-            reject(
-              new Error(
-                "Could not find transcript button after multiple attempts"
-              )
-            );
+            reject(new Error("Menu button not found after multiple attempts"));
           }
+          return;
         }
+
+        const openTranscriptButton = document.querySelector(
+          'button[aria-label="Show transcript"]'
+        );
+        
+        if (!openTranscriptButton) {
+          reject(new Error("No transcript available for this video"));
+          return;
+        }
+
+        openTranscriptButton.click();
+        setTimeout(() => {
+          const transcriptText = extractTranscriptText();
+          if (transcriptText) {
+            const closeTranscriptButton = document.querySelector(
+              'button[aria-label="Close transcript"]'
+            );
+            if (closeTranscriptButton) closeTranscriptButton.click();
+            resolve(transcriptText);
+          } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+              setTimeout(tryOpenTranscript, 2000);
+            } else {
+              reject(new Error("No transcript found after multiple attempts"));
+            }
+          }
+        }, 1000);
       };
 
-      setTimeout(tryOpenTranscript, 2000);
+      setTimeout(tryOpenTranscript, 3000);
     });
   };
 
@@ -325,11 +345,15 @@
       currentVideoId = getVideoId(window.location.href);
       try {
         transcript = await fetchTranscript();
+        toggleChatboxButton(true);
       } catch (error) {
         console.error("Error fetching transcript:", error);
+        toggleChatboxButton(false, "Chat unavailable - No transcript found for this video");
+        container.classList.remove("yt-chatbot-open");
+        container.classList.add("yt-chatbot-closed");
       }
       container.classList.remove("yt-chatbot-closed");
-      suggestedQuestionsGenerated = false; // Reset flag for new video
+      suggestedQuestionsGenerated = false;
     } else {
       currentVideoId = null;
       transcript = null;
