@@ -193,7 +193,7 @@
             {
               role: "system",
               content:
-                "You are a youtube video analysis assistant. Generate 3-5 short, precise, and specific questions based on the video transcript. Each question should be no longer than 10 words and should encourage viewers to engage more deeply with the video content. The questions should only be in english.",
+                "You are a youtube video analysis assistant. Generate 3-5 short, precise, and specific questions based on the video transcript. Each question should be no longer than 10 words and should encourage viewers to engage more deeply with the video content. The questions should only be in english. Don't include the keyword 'transcript' in your response.",
             },
             {
               role: "user",
@@ -229,12 +229,13 @@
 
     const actionPrompts = {
       summarize:
-        "Provide a brief summary of the video content in about 3-4 sentences.",
-      "key-points": "List the 3-5 main key points or takeaways from the video.",
+        "Provide a brief summary of the video content in about 3-4 sentences. Don't include the keyword 'transcript' in your response.",
+      "key-points":
+        "List the 3-5 main key points or takeaways from the video. Don't include the keyword 'transcript' in your response.",
       explain:
-        "Provide a detailed explanation of the main topic discussed in the video.",
+        "Provide a detailed explanation of the main topic discussed in the video. Don't include the keyword 'transcript' in your response.",
       "related-topics":
-        "Suggest 3-5 related topics that viewers might want to explore further based on this video's content.",
+        "Suggest 3-5 related topics that viewers might want to explore further based on this video's content. Don't include the keyword 'transcript' in your response.",
     };
 
     try {
@@ -246,7 +247,7 @@
             {
               role: "system",
               content:
-                "You are a youtube video analysis assistant. Provide concise and informative responses based on the video transcript.",
+                "You are a youtube video analysis assistant. Provide concise and informative responses based on the video transcript. Don't include the keyword 'transcript' in your response. ",
             },
             {
               role: "user",
