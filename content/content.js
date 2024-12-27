@@ -126,14 +126,28 @@
     return new Promise((resolve, reject) => {
       const maxAttempts = 10;
       let attempts = 0;
+      let transcriptOpened = false;
+
+      const cleanup = () => {
+        const closeTranscriptButton = document.querySelector(
+          'button[aria-label="Close transcript"]'
+        );
+        if (closeTranscriptButton && transcriptOpened) {
+          closeTranscriptButton.click();
+        }
+      };
 
       const tryOpenTranscript = () => {
+        // Cleanup any existing open transcript first
+        cleanup();
+
         const menuButton = document.querySelector('button[aria-label="More actions"]');
         if (!menuButton) {
           attempts++;
           if (attempts < maxAttempts) {
             setTimeout(tryOpenTranscript, 2000);
           } else {
+            cleanup();
             reject(new Error("Menu button not found after multiple attempts"));
           }
           return;
@@ -144,29 +158,34 @@
         );
         
         if (!openTranscriptButton) {
+          cleanup();
           reject(new Error("No transcript available for this video"));
           return;
         }
 
         openTranscriptButton.click();
+        transcriptOpened = true;
+
         setTimeout(() => {
           const transcriptText = extractTranscriptText();
           if (transcriptText) {
-            const closeTranscriptButton = document.querySelector(
-              'button[aria-label="Close transcript"]'
-            );
-            if (closeTranscriptButton) closeTranscriptButton.click();
+            cleanup();
+            transcriptOpened = false;
             resolve(transcriptText);
           } else {
             attempts++;
             if (attempts < maxAttempts) {
               setTimeout(tryOpenTranscript, 2000);
             } else {
+              cleanup();
               reject(new Error("No transcript found after multiple attempts"));
             }
           }
         }, 1000);
       };
+
+      // Add cleanup on page unload
+      window.addEventListener('beforeunload', cleanup);
 
       setTimeout(tryOpenTranscript, 3000);
     });
@@ -196,15 +215,25 @@
     return data;
   };
 
+  const getVideoMetadata = () => {
+    const metadata = {
+      title: document.querySelector('h1.ytd-video-primary-info-renderer')?.textContent?.trim() || '',
+      channel: document.querySelector('ytd-video-owner-renderer #channel-name')?.textContent?.trim() || '',
+      description: document.querySelector('ytd-expander#description')?.textContent?.trim() || '',
+      views: document.querySelector('ytd-video-view-count-renderer')?.textContent?.trim() || '',
+      date: document.querySelector('.ytd-video-primary-info-renderer .ytd-video-primary-info-renderer:last-child')?.textContent?.trim() || ''
+    };
+    return metadata;
+  };
+
   const generateSuggestedQuestions = async () => {
     if (!transcript) {
-      showError(
-        "No transcript available. Suggested questions cannot be generated."
-      );
+      showError("No transcript available. Suggested questions cannot be generated.");
       return;
     }
 
     try {
+      const metadata = getVideoMetadata();
       const data = await handleOpenAIRequest(
         "https://api.openai.com/v1/chat/completions",
         {
@@ -213,11 +242,20 @@
             {
               role: "system",
               content:
-                "You are a youtube video analysis assistant. Generate 3-5 short, precise, and specific questions based on the video transcript. Each question should be no longer than 10 words and should encourage viewers to engage more deeply with the video content. The questions should only be in english. Don't include the keyword 'transcript' in your response.",
+                "You are a youtube video analysis assistant. Generate 3-5 short, precise, and specific questions based on the video content. Each question should be no longer than 10 words and should encourage viewers to engage more deeply with the video content. Consider the video's title, channel style, and topic when generating questions. The questions should only be in english. Don't include the keyword 'transcript' in your response.",
             },
             {
               role: "user",
-              content: `Transcript: ${transcript}\n\nTask: Generate 3-5 suggested questions about this video content.`,
+              content: `Video Context:
+Title: ${metadata.title}
+Channel: ${metadata.channel}
+Description: ${metadata.description}
+Views: ${metadata.views}
+Upload Date: ${metadata.date}
+
+Transcript: ${transcript}
+
+Task: Generate 3-5 suggested questions about this video content that match the channel's style and topic.`,
             },
           ],
         }
@@ -241,21 +279,20 @@
 
   const handleActionButton = async (action) => {
     if (!transcript) {
-      showError(
-        "No transcript available. Cannot perform the requested action."
-      );
+      showError("No transcript available. Cannot perform the requested action.");
       return;
     }
 
+    const metadata = getVideoMetadata();
     const actionPrompts = {
       summarize:
-        "Provide a brief summary of the video content in about 3-4 sentences. Don't include the keyword 'transcript' in your response.",
+        "Provide a brief summary of the video content in about 3-4 sentences, matching the tone and style of the channel. Don't include the keyword 'transcript' in your response.",
       "key-points":
-        "List the 3-5 main key points or takeaways from the video. Don't include the keyword 'transcript' in your response.",
+        "List the 3-5 main key points or takeaways from the video, considering the channel's style and target audience. Don't include the keyword 'transcript' in your response.",
       explain:
-        "Provide a detailed explanation of the main topic discussed in the video. Don't include the keyword 'transcript' in your response.",
+        "Provide a detailed explanation of the main topic discussed in the video, matching the creator's communication style. Don't include the keyword 'transcript' in your response.",
       "related-topics":
-        "Suggest 3-5 related topics that viewers might want to explore further based on this video's content. Don't include the keyword 'transcript' in your response.",
+        "Suggest 3-5 related topics that viewers of this channel might want to explore further based on this video's content. Don't include the keyword 'transcript' in your response.",
     };
 
     try {
@@ -267,11 +304,20 @@
             {
               role: "system",
               content:
-                "You are a youtube video analysis assistant. Provide concise and informative responses based on the video transcript. Don't include the keyword 'transcript' in your response. ",
+                "You are a youtube video analysis assistant. Provide concise and informative responses based on the video content. Match the tone and style of the channel. Don't include the keyword 'transcript' in your response.",
             },
             {
               role: "user",
-              content: `Transcript: ${transcript}\n\nTask: ${actionPrompts[action]}`,
+              content: `Video Context:
+Title: ${metadata.title}
+Channel: ${metadata.channel}
+Description: ${metadata.description}
+Views: ${metadata.views}
+Upload Date: ${metadata.date}
+
+Transcript: ${transcript}
+
+Task: ${actionPrompts[action]}`,
             },
           ],
         }
@@ -298,6 +344,7 @@
 
     try {
       isWaitingForResponse = true;
+      const metadata = getVideoMetadata();
 
       const data = await handleOpenAIRequest(
         "https://api.openai.com/v1/chat/completions",
@@ -307,9 +354,19 @@
             {
               role: "system",
               content:
-                "You are a youtube question answerer assistant that answers questions based on the provided video transcript. Keep the answer short and concise in english. Don't mention the keyword 'transcript' while answering the question. The answer should be in third person in respective of the person in the video. If the question is not related to the video, say respond with 'I'm sorry, I can't answer that question. Its out of context.'",
+                "You are a youtube video assistant that answers questions based on the provided video content. Keep answers concise and match the tone of the channel. Don't mention the keyword 'transcript'. If the question is not related to the video, respond with 'I'm sorry, I can't answer that question. It's not related to this video's content.'",
             },
-            { role: "user", content: `Transcript: ${transcript}` },
+            {
+              role: "user",
+              content: `Video Context:
+Title: ${metadata.title}
+Channel: ${metadata.channel}
+Description: ${metadata.description}
+Views: ${metadata.views}
+Upload Date: ${metadata.date}
+
+Transcript: ${transcript}`,
+            },
             ...chatHistory,
             { role: "user", content: question },
           ],
@@ -342,15 +399,20 @@
     apiKey = await getApiKey();
 
     if (isVideo) {
-      currentVideoId = getVideoId(window.location.href);
-      try {
-        transcript = await fetchTranscript();
-        toggleChatboxButton(true);
-      } catch (error) {
-        console.error("Error fetching transcript:", error);
-        toggleChatboxButton(false, "Chat unavailable - No transcript found for this video");
-        container.classList.remove("yt-chatbot-open");
-        container.classList.add("yt-chatbot-closed");
+      const newVideoId = getVideoId(window.location.href);
+      
+      // Only fetch transcript if it's a different video
+      if (newVideoId !== currentVideoId) {
+        currentVideoId = newVideoId;
+        try {
+          transcript = await fetchTranscript();
+          toggleChatboxButton(true);
+        } catch (error) {
+          console.error("Error fetching transcript:", error);
+          toggleChatboxButton(false, "Chat unavailable - No transcript found for this video");
+          container.classList.remove("yt-chatbot-open");
+          container.classList.add("yt-chatbot-closed");
+        }
       }
       container.classList.remove("yt-chatbot-closed");
       suggestedQuestionsGenerated = false;

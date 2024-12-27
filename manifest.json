@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Youtube chatbot assistant",
+  "name": "TubeSage - YouTube Video Q&A Chatbot",
   "version": "1.0",
   "description": "Enhance your YouTube experience by asking questions, summarizing videos, and extracting key points effortlessly.",
   "permissions": ["tabs", "scripting", "storage"],
